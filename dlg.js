@@ -39,7 +39,7 @@ function de(de, line, row) {
 
 // the main stats retrieval function
 
-exports.get = function (id, callback) {
+exports.profile = function (id, callback) {
 
   var data = { }
 
@@ -165,4 +165,47 @@ exports.get = function (id, callback) {
   });
 }
 
+var removeHtml = new RegExp("s/<(.*?)>//g");
 
+function getInfo(rawText) {
+  var info = rawText.split('<br>').map(function(e) { return trim(e); });
+  var awarded = info[0].replace(/<.*?>/g, ''),
+      nextlvl = info[1].replace(/<.*?>/g, ''),
+      current = info[2].split('</i>')[1];
+  return {
+    awarded: awarded.substr('Awarded: '.length, awarded.length),
+    nextlvl: nextlvl.substr('Next level: '.length, nextlvl.length),
+    current: trim(current)
+  };
+};
+
+exports.achievements = function (id, callback) {
+  var data = { }
+
+  var url = 'http://www.dotalicious-gaming.com/index.php?action=dota;area=achievements&user=' + id;
+
+  request({ uri: url }, function (error, response, body) {
+    if (error && response.statusCode !== 200) {
+      callback(true);
+    }
+
+    jsdom.env({
+      html: body,
+      scripts: [ 'http://code.jquery.com/jquery-1.5.min.js' ]
+    }, function (err, window) {
+      var $ = window.jQuery;
+      var achievements = [];
+      $('.achievement').each(function (id) {
+        var a = $(this);
+        console.log();
+        achievements.push({
+          name:         a.find('.header').text(),
+          description:  a.find('.description').text(),
+          image:        a.find('img:first').attr('src'),
+          info: getInfo(a.find('.info').html())
+        });
+      });
+      callback(null, achievements);
+    });
+  });
+}

@@ -23,6 +23,15 @@ function text(line, row) {
 function updateInfo(row, data) {
   text('name'  , row).text(data.username);
   text('avatar', row).find('img').attr('src', data.avatar);
+
+  text('signature', row).html(data.signature);
+
+  if (data.clan == null) {
+    text('clan', row).text('-');
+  } else {
+    text('clan', row).text(data.clan);
+  }
+
   text('vouch' , row).text((data.vouched ? 'yes' : 'no'));
 
   text('games' , row).text(data.games.played);
