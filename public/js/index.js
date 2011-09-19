@@ -6,6 +6,12 @@ function get(id, callback) {
   });
 }
 
+function top(len, callback) {
+  $.get('/top/' + len, function (data) {
+    callback(JSON.parse(data));
+  });
+}
+
 function text(line, row) {
   if (typeof(line === 'string')) {
     return $('#info').find('#' + line).find('td:eq(' + row + ')');
@@ -32,32 +38,27 @@ function updateInfo(row, data) {
   text('kills',   row).text(data.hero.kills);
   text('deaths',  row).text(data.hero.deaths);
   text('assists', row).text(data.hero.assists);
-
-/*
-  text(1, row).text(data.username);
-  text(2, row).find('img').attr('src', data.avatar);
-  text(3, row).text((data.vouched ? 'yes' : 'no'));
-  text(4, row).text(data.games.played);
-  text(5, row).text(data.games.won);
-  text(6, row).text(data.games.left);
-  */
 }
 
-
-$('#p1').submit(function (event) {
-  var id1 = $('#id1').val();
-  get(id1, function(data) {
-    console.log(data);
-    updateInfo(0, data);
+function form(formid, row) {
+  $('#p' + formid).submit(function (event) {
+    var id = $('#id' + formid).val();
+    get(id, function (data) {
+      updateInfo(row, data);
+    });
+    return false;
   });
-  return false;
-});
+};
 
-$('#p2').submit(function (event) {
-  var id2 = $('#id2').val();
-  get(id2, function(data) {
-    updateInfo(2, data);
-    console.log(data);
-  });
-  return false;
+form(1, 0);
+form(2, 2);
+
+function topInsert(id, name) {
+  $('#top > tbody:last').after('<tr><td class="l">' + id + '</td><td>' + name + '</td></tr>');
+}
+
+top(15, function (top) {
+  for (var i = 0; i < top.length; i++) {
+    topInsert(top[i].id, top[i].username);
+  }
 });
