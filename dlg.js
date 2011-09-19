@@ -140,7 +140,10 @@ exports.get = function (id, callback) {
       data.karma = de(c3, 0, o + 1);
       data.refferals = parseInt(trim(de(c3, 0, 2)));
 
-      data.age = de(c3, 0, 5);
+      data.age = trim(de(c3, 0, 5));
+      if (data.age == '') {
+        data.age = null;
+      }
 
       data.date = {
         'registered': de(c3, 1, o + 0),
