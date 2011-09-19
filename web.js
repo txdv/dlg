@@ -33,17 +33,44 @@ function countinc(id) {
   });
 };
 
-app.get('/top/:len', function (req, res) {
-  var len = Math.max(req.params.len, 100);
-  len = Math.min(len, 10);
-  client.sort('users', { by: '/count/*', order: 'desc', limit: [0, len], get: '/username/*' }, function (err, ret) {
+function top(n, callback) {
+  query = { by: '/count/*', order: 'desc', get: '/username/*' };
+
+  if (typeof n !== 'function') {
+    query.limit = [0, n];
+  } else {
+    callback = n;
+  }
+
+  client.sort('users', query, function (err, ret) {
+    if (err) {
+      callback(null);
+    }
+
     for (var i = 0; i < ret.length; i++) {
       ret[i] = JSON.parse(ret[i]);
     }
+
+    callback(ret);
+  });
+}
+
+app.get('/top/:len', function (req, res) {
+  var len = Math.max(req.params.len, 100);
+  top(Math.min(len, 10), function (ret) {
     res.send(JSON.stringify(ret, null, 4));
   });
 });
 
+app.get('/search/:substr', function (req, res) {
+  var substrRegex = new RegExp(req.params.substr, 'i');
+  top(function (ret) {
+    var data = ret.filter(function (element) {
+      return substrRegex.test(element.username);
+    });
+    res.send(JSON.stringify(data, null, 4));
+  });
+});
 
 function getUsername(id) {
   client.get('/username/' + id, function (error, key) {
@@ -57,7 +84,6 @@ function getUsername(id) {
     }
   });
 }
-
 
 app.get('/user/:id', function (req, res) {
   var userstring = '/user/' + req.params.id;
