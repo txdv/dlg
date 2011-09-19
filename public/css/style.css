@@ -1,0 +1,13 @@
+td.r {
+  width: 50%;
+}
+
+td.l {
+  width: 50%;
+  text-align: right;
+}
+
+td.c {
+  text-align: center;
+}
+

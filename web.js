@@ -2,8 +2,10 @@ var
     express = require('express'),
     io      = require('socket.io'),
     dlg     = require('./dlg'),
+    redis   = require('redis-node'),
 
-    app     = express.createServer();
+    app     = express.createServer(),
+    client  = redis.createClient();
 
 
 app.configure(function () {
@@ -20,22 +22,30 @@ app.configure('development', function () {
 
 app.set('view engine', 'jade');
 
-
 app.listen(3000);
 
 io = io.listen(app);
 
-var txdv = 21799;
-var aussie = 433;
-
 app.get('/user/:id', function (req, res) {
-  dlg.get(req.params.id, function (error, data) {
-    if (error) {
-      //throw new Error;
-      res.end(JSON.stringify(error, null, 4));
-      //return;
+  var userstring = '/user/' + req.params.id;
+  client.get(userstring, function (error, key) {
+    if (!key) {
+      dlg.get(req.params.id, function (error, data) {
+        key = JSON.stringify(data, null, 4);
+        client.set(userstring, key, function (error) {
+          if (!error) {
+            client.expire(userstring, 5 * 60);
+          }
+        });
+        res.end(key);
+      });
+    } else {
+      res.end(key);
     }
-    res.end(JSON.stringify(data, null, 4));
   });
 });
 
+
+app.get('/', function (req, res) {
+  res.render('index');
+});
