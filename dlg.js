@@ -41,7 +41,7 @@ function de(de, line, row) {
 
 exports.profile = function (id, callback) {
 
-  var data = { }
+  var data = { id: parseInt(id) };
 
   var url = 'http://www.dotalicious-gaming.com/index.php?action=profile;u=' + id;
 
@@ -60,7 +60,6 @@ exports.profile = function (id, callback) {
       var c1 = $('.content');
 
       username = c1.find('.username').find('h4');
-
       data.username = username.text().split(' ', 1)[0];
       data.position = username.find('span').html();
       data.avatar   = c1.find('img.avatar').attr('src');
@@ -180,8 +179,6 @@ function getInfo(rawText) {
 };
 
 exports.achievements = function (id, callback) {
-  var data = { }
-
   var url = 'http://www.dotalicious-gaming.com/index.php?action=dota;area=achievements&user=' + id;
 
   request({ uri: url }, function (error, response, body) {

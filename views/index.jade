@@ -22,9 +22,9 @@ table#info(width="100%")
     td(class="r")
       img
   tr#signature(width="100%")
-    td
+    td(class="signature")
     td(class="c") signature
-    td
+    td(class="signature")
   tr#vouch(width="100%")
     td(class="l")
     td(class="c") vouched
@@ -61,12 +61,23 @@ table#info(width="100%")
     td(class="l")
     td(class="c") assists
     td(class="r")
-table#top(width="100%")
+table#container(width="100%")
   tr
-    td(align="center", colspan="2")
-      b top 15 lookups
-  tr
-    td(class="l") id
-    td(class="r") name
+    td(width="50%")
+      table#top(width="100%")
+        tr
+          td(align="center", colspan="3")
+            b top 15
+        tr
+          td(class="l") id
+          td(class="r") name
+    td
+      table#live(width="50%")
+        tr
+          td(align="center", colspan="2")
+            b last 15
+        tr
+          td(class="l") id
+          td(class="r") name
 
 script(type='text/javascript', src="js/index.js")

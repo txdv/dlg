@@ -1,9 +1,41 @@
 var socket = io.connect('/index');
 
+function tableInsert(fid, array) {
+  var res = '<tr>';
+  for (var i = 0; i < array.length; i++) {
+    res += '<td>' + array[i] + '</td>';
+  }
+  res += '</tr>';
+  $(fid + ' > tbody:last').after(res);
+}
+
+socket.on('get', function (data) {
+  tableInsert('#live', [ data.id, data.username ]);
+  if ($('#live tr').length > 15) {
+    $('#live tr:last').remove();
+  }
+});
+
+socket.on('last', function (data) {
+  for (var i = 0; i < data.length; i++) {
+    tableInsert('#live', [ data[i].id, data[i].username ]);
+  }
+});
+socket.emit('last');
+
+var lastFetched = null
+
 function get(id, callback) {
-  $.get('/user/' + id, function (data) {
-    callback(JSON.parse(data));
-  });
+  id = parseInt(id);
+  console.log(lastFetched);
+  if (lastFetched !== null && lastFetched.id === id) {
+    callback(lastFetched);
+  } else {
+    $.get('/user/' + id, function (data) {
+      lastFetched = JSON.parse(data);
+      callback(lastFetched);
+    });
+ }
 }
 
 function top(len, callback) {
@@ -62,12 +94,9 @@ function form(formid, row) {
 form(1, 0);
 form(2, 2);
 
-function topInsert(id, name) {
-  $('#top > tbody:last').after('<tr><td class="l">' + id + '</td><td>' + name + '</td></tr>');
-}
-
 top(15, function (top) {
   for (var i = 0; i < top.length; i++) {
-    topInsert(top[i].id, top[i].username);
+    tableInsert('#top', [ top[i].id, top[i].username ]);
   }
 });
+

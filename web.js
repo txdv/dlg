@@ -58,6 +58,24 @@ function top(n, callback) {
   });
 }
 
+var lastArray = [];
+
+lastArray.add = function(data) {
+  if (lastArray.length > 15) {
+    lastArray.pop();
+  }
+  lastArray.unshift(data);
+  index.emit('get', data);
+}
+
+var index = io
+.of('/index')
+.on('connection', function (socket) {
+  socket.on('last', function (id) {
+    socket.emit('last', lastArray);
+  });
+});
+
 app.get('/top/:len', function (req, res) {
   var len = Math.max(parseInt(req.params.len), 100);
   top(Math.min(len, 10), function (ret) {
@@ -107,16 +125,20 @@ function get(func, key, id, expire, callback) {
 }
 
 app.get('/user/:id', function (req, res) {
+  var id = parseInt(req.params.id);
   get(dlg.profile, '/user/', req.params.id, 20 * 60, function (error, data, slow) {
     if (error) {
       return;
     }
     res.send(stringify(data));
+    var info = { username: data.username, id: parseInt(req.params.id) };
+    //index.emit('get', info);
+    lastArray.add(info);
     client.transaction(function () {
       countinc(req.params.id);
       client.sadd('users', req.params.id);
       if (slow) {
-        client.set('/username/' + req.params.id, stringify({ username: data.username, id: req.params.id }));
+        client.set('/username/' + req.params.id, stringify(info));
       }
     });
 
@@ -135,3 +157,4 @@ app.get('/achievements/:id', function(req, res) {
 app.get('/', function (req, res) {
   res.render('index');
 });
+
