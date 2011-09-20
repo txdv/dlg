@@ -1,7 +1,19 @@
 var dlg = require('./dlg'),
     sys = require('sys');
 
-dlg.profile(process.argv[2], function (error, data) {
+String.prototype.startsWith = function (str){
+  return this.indexOf(str) == 0;
+};
+
+var func = dlg.profile;
+
+var a = process.argv[2];
+
+if ('achievements'.startsWith(a)) {
+  func = dlg.achievements;
+}
+
+func(process.argv[3], function (error, data) {
   if (error) {
     sys.puts('couldn\'t fetch the stuff');
     return;
