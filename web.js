@@ -132,7 +132,6 @@ app.get('/user/:id', function (req, res) {
     }
     res.send(stringify(data));
     var info = { username: data.username, id: parseInt(req.params.id) };
-    //index.emit('get', info);
     lastArray.add(info);
     client.transaction(function () {
       countinc(req.params.id);
@@ -141,7 +140,6 @@ app.get('/user/:id', function (req, res) {
         client.set('/username/' + req.params.id, stringify(info));
       }
     });
-
   });
 });
 
