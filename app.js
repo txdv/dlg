@@ -11,6 +11,8 @@ var a = process.argv[2];
 
 if ('achievements'.startsWith(a)) {
   func = dlg.achievements;
+} else if ('heroes'.startsWith(a)) {
+  func = dlg.heroes;
 }
 
 func(process.argv[3], function (error, data) {

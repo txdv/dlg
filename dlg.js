@@ -206,3 +206,42 @@ exports.achievements = function (id, callback) {
     });
   });
 }
+
+exports.heroes = function (id, callback) {
+  var url = 'http://www.dotalicious-gaming.com/index.php?action=dota;area=heroes&user=' + id;
+  request({ uri: url }, function (error, response, body) {
+    if (error && response.statusCode !== 200) {
+      callback(true);
+    }
+    jsdom.env({
+      html: body,
+      scripts: [ 'http://code.jquery.com/jquery-1.5.min.js' ]
+    }, function (err, window) {
+      var $ = window.jQuery;
+      var heroes = [ ];
+      $('table.herotds').each(function () {
+        var e = $(this);
+        e.find('img').each(function () {
+          var i = $(this);
+          var title = i.attr('title');
+          var s = title.split(': ');
+          var s1 = s[0].split(', the ');
+
+          var t = s[1].split('%), ');
+          var t1 = t[0].split(' times played (');
+          var t2 = t[1].substr(0, t[1].length - 2).split(' times won (');
+
+          heroes.push({
+            nick: s1[0],
+            name: s1[1],
+            played   : parseInt(  t1[0]),
+            playedpct: parseFloat(t1[1]),
+            won      : parseInt(  t2[0]),
+            wonpct   : parseFloat(t2[1])
+          });
+        });
+      });
+      callback(null, heroes);
+    });
+  });
+}

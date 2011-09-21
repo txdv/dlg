@@ -154,6 +154,15 @@ app.get('/achievements/:id', function(req, res) {
   });
 });
 
+app.get('/heroes/:id', function (req, res) {
+  get(dlg.heroes, '/heroes', req.params.id, 20 * 60, function (error, data) {
+    if (error) {
+      return;
+    }
+    res.send(stringify(data));
+  });
+});
+
 app.get('/', function (req, res) {
   res.render('index');
 });
