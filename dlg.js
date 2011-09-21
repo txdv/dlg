@@ -152,6 +152,31 @@ exports.profile = function (id, callback) {
       data.signature = trim($('.signature').html());
       data.signature = data.signature.substring(prefix.length, data.signature.length);
 
+      var pen = $('table:eq(0)').find('table:eq(0)').find('table:eq(2)');
+      var first = true;
+      var penalties = [];
+      pen.find('tr').each(function(id) {
+        if (first) {
+          first = false;
+        } else {
+          var amount = $(this).find('td:eq(0)').text().split(' of ');
+          var reason = $(this).find('td:eq(1)').text();
+          var gameid = $(this).find('td:eq(2)').text().split(' in Game #');
+
+          penalties.push({
+            pp: {
+              current: parseFloat(amount[0]),
+              total: parseInt(amount[1])
+            },
+            reason: reason,
+            gameid: parseInt(gameid[1]),
+            date:  gameid[0]
+          });
+        }
+      });
+
+      data.penalties = penalties;
+
       callback(null, data);
 
       } catch (err) {
