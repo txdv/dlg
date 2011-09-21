@@ -6,7 +6,6 @@ var
 
 // some useful stuff
 
-
 function trim(text) {
   return text.replace(/^\s+|\s+$/g,"");
 }
