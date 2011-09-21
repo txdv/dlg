@@ -30,10 +30,7 @@ function stringify(data) {
 }
 
 function countinc(id) {
-  var countstring = '/count/' + id;
-  client.get(countstring, function (error, key) {
-    client.incrby(countstring, 1);
-  });
+  client.incrby('/count/' + id, 1);
 };
 
 function top(n, callback) {
