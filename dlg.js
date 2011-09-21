@@ -20,7 +20,6 @@ function element(de, element1, line, element2, row) {
 }
 
 function e(e, line, row) {
-  //return e.find('tr:eq(' + line + ')').find('td:eq(' + row + ')').text();
   return element(e, 'tr', line, 'td', row);
 }
 
@@ -33,7 +32,6 @@ function f(f, line, row) {
 }
 
 function de(de, line, row) {
-  //return de.find('dl:eq(' + line + ')').find('dd:eq(' + row + ')').text();
   return element(de, 'dl', line, 'dd', row);
 }
 
