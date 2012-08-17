@@ -11,7 +11,6 @@ if (typeof String.prototype.startsWith != 'function') {
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 
-var running = null;
 
 var client = new irc.Client(config.server, config.nick, { channels: config.channels });
 
@@ -23,29 +22,12 @@ config.channels.each(function (channel) {
   });
 });
 
-function event(games) {
+var games = new dlg.GameWatcher();
+
+games.on('bunch', function (finished) {
   config.channels.each(function (channel) {
     client.say(channel, 'Games finished: ' + games);
   });
-}
-
-function run() {
-  dlg.runninggames(function (error, games) {
-    if (error) {
-      return;
-    }
-    games = games.collect(function (game) { return game.id; });
-    var finished = games.select(function (g) { return !running.include(g); });
-    if (finished.length > 0) {
-      event(finished);
-    }
-    running = games;
-    setTimeout(run, 30 * 1000);
-  });
-}
-
-// initialize
-dlg.runninggames(function (error, games) {
-  running = games.collect(function (game) { return game.id; });
-  run();
 });
+
+games.start();
