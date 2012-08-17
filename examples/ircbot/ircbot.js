@@ -23,9 +23,8 @@ config.channels.each(function (channel) {
 });
 
 games.on('bunchend', function (finished) {
-  console.log(finished);
   config.channels.each(function (channel) {
-    client.say(channel, 'Games finished: ' + games);
+    client.say(channel, 'Games finished: ' + finished.join(', '));
   });
 });
 
