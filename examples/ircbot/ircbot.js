@@ -24,7 +24,7 @@ config.channels.each(function (channel) {
 
 var games = new dlg.GameWatcher();
 
-games.on('bunch', function (finished) {
+games.on('bunchend', function (finished) {
   config.channels.each(function (channel) {
     client.say(channel, 'Games finished: ' + games);
   });
