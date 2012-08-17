@@ -1,6 +1,7 @@
-var dlg = require('./auth.js'),
+var dlg = require('../../lib/main'),
     prototype = require('prototype'),
-    irc = require('irc');
+    irc = require('irc'),
+    fs = require('fs');
 
 if (typeof String.prototype.startsWith != 'function') {
   String.prototype.startsWith = function (str) {
@@ -8,18 +9,24 @@ if (typeof String.prototype.startsWith != 'function') {
   };
 }
 
+var config = JSON.parse(fs.readFileSync('config.json'));
+
 var running = null;
 
-var client = new irc.Client('irc.freenode.org', 'afro-dlg', { channels: [ "#bletnx" ] });
+var client = new irc.Client(config.server, config.nick, { channels: config.channels });
 
-client.addListener("message#bletnx", function (from, message) {
-  if (message.startsWith('!running')) {
-    client.say('#bletnx', "Currently running games: " + running.length);
-  }
+config.channels.each(function (channel) {
+  client.addListener('message' + channel, function (from, message) {
+    if (message.startsWith('!running')) {
+      client.say(channel, 'Currently running games: ' + running.length);
+    }
+  });
 });
 
 function event(games) {
-  client.say('#bletnx', 'Games finished: ' + games);
+  config.channels.each(function (channel) {
+    client.say(channel, 'Games finished: ' + games);
+  });
 }
 
 function run() {
@@ -42,4 +49,3 @@ dlg.runninggames(function (error, games) {
   running = games.collect(function (game) { return game.id; });
   run();
 });
-

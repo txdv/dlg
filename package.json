@@ -1,0 +1,14 @@
+{
+  "name" : "dlg",
+  "description" : "json abstraction for http://www.dotalicious-gaming.com",
+  "tags": ["http"],
+  "version" : "0.1.0",
+  "author" : "Andrius Bentkus <andrius.bentkus@gmail.com>",
+  "repository" : {
+    "type" : "git",
+    "url" : "http://github.com/txdv/dlg"
+  },
+  "engines" : ["node >= 0.6"],
+  "main" : "main",
+  "files" : [ "lib/", "examples" ]
+}
