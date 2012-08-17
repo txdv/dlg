@@ -10,21 +10,20 @@ if (typeof String.prototype.startsWith != 'function') {
 }
 
 var config = JSON.parse(fs.readFileSync('config.json'));
-
-
 var client = new irc.Client(config.server, config.nick, { channels: config.channels });
+
+var games = new dlg.GameWatcher();
 
 config.channels.each(function (channel) {
   client.addListener('message' + channel, function (from, message) {
     if (message.startsWith('!running')) {
-      client.say(channel, 'Currently running games: ' + running.length);
+      client.say(channel, 'Currently running games: ' + games.current.length);
     }
   });
 });
 
-var games = new dlg.GameWatcher();
-
 games.on('bunchend', function (finished) {
+  console.log(finished);
   config.channels.each(function (channel) {
     client.say(channel, 'Games finished: ' + games);
   });
