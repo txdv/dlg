@@ -10,3 +10,7 @@ td.l {
 td.c {
   text-align: center;
 }
+
+td.signature {
+  background-color: rgba(0, 0, 0, 0.3);
+}
