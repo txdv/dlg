@@ -1,5 +1,6 @@
 var JSONStream = require('JSONStream'),
-    request = require('request');
+    request = require('request'),
+    fs = require('fs');
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 
