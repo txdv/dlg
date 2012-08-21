@@ -1,14 +1,40 @@
-var JSONStream = require('JSONStream'),
+var dlg = require('../../lib/main'),
+    JSONStream = require('JSONStream'),
     request = require('request'),
-    fs = require('fs');
+    fs = require('fs'),
+    dotaparser = require('../../../dotaparser/main.js'),
+    irc = require('irc');
 
 var config = JSON.parse(fs.readFileSync('config.json'));
+var ircconfig = JSON.parse(fs.readFileSync('../ircbot/config.json'));
+var client = new irc.Client(ircconfig.server, ircconfig.nick, { channels: ircconfig.channels });
 
 var stream = JSONStream.parse(['gameend']),
     req = request({ url: config.host + ':' + config.port });
 
 req.pipe(stream);
 
-stream.on('data', function (data) {
-  console.log(data);
+counter = { };
+
+stream.on('data', function (id) {
+  dlg.downloadreplay(id, function (path) {
+    dotaparser.replay3(path, function (game, event) {
+      switch (event.type) {
+      case 'chat':
+        if (event.text.search('noob') === -1) {
+          return;
+        }
+
+        if (counter[event.player.name] === undefined) {
+          counter[event.player.name] = 1;
+        } else {
+          counter[event.player.name]++;
+        }
+      default:
+        return;
+      }
+    }, function () {
+      console.log(counter);
+    });
+  });
 });

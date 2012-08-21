@@ -20,10 +20,16 @@ server.listen(config.port);
 
 var games = new dlg.GameWatcher();
 games.on('gameend', function (id) {
-  console.log(id);
   connections.each(function (e) {
     e.write(JSON.stringify({
       gameend: id,
+    }) + '\r\n');
+  });
+});
+games.on('gamebegin', function (id) {
+  connections.each(function (e) {
+    e.write(JSON.stringify({
+      gamebegin: id
     }) + '\r\n');
   });
 });
