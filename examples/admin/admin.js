@@ -5,7 +5,7 @@ var dlg = require('../../lib/main'),
 var config = JSON.parse(fs.readFileSync('config.json'));
 
 dlg.login(config.username, config.password, function (error, response, body) {
-  dlg.requestreports({ perlist: 5000 }, function (info) {
+  dlg.requestreports({ perlist: 5000 }, function (error, info) {
     info2 = info.select(function(e) { return e.title === 'flame'; })
     console.log(info.length + ' (' + info2.length + ')');
   });
