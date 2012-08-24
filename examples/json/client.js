@@ -1,9 +1,9 @@
 var dlg = require('../../lib/main'),
+    dotaparser = require('../../../dotaparser/main.js'),
     JSONStream = require('JSONStream'),
     request = require('request'),
-    fs = require('fs'),
-    dotaparser = require('../../../dotaparser/main.js'),
-    irc = require('irc');
+    irc = require('irc'),
+    fs = require('fs');
 
 var config = JSON.parse(fs.readFileSync('config.json'));
 var ircconfig = JSON.parse(fs.readFileSync('../ircbot/config.json'));
